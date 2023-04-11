@@ -17,17 +17,18 @@ import java.util.concurrent.CountDownLatch;
 public class App {
 
     private static final String URL = "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC";
+    private static final String URL2 = "jdbc:mysql://localhost:3307/test?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC";
 
     // 全局事务管理器只有一个
     private static final TransactionManager transactionManager = TransactionManagerImpl.getSingleton();
 
     private static final DBPool dbPool1 = new MyJDBCDBPool("root", "123456", URL);
 
-    private static final DBPool dbPool2 = new MyJDBCDBPool("root", "123456", URL);
+    private static final DBPool dbPool2 = new MyJDBCDBPool("root", "123456", URL2);
 
 
     public static void main(String[] args) {
-        concurrentTest(10);
+        concurrentTest(100);
     }
 
     /**
