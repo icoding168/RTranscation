@@ -33,6 +33,7 @@ public class Test {
     private static final boolean logXaCommands = true;
 
     private static final String URL = "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC";
+    private static final String URL2 = "jdbc:mysql://localhost:3307/test?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC";
 
     public static void main(String[] args) throws SQLException {
 // 是否打印 XA 日志
@@ -41,7 +42,7 @@ public class Test {
         // 获得 RM1
         Connection conn1 = DriverManager.getConnection(URL, "root", "123456");
         // 获得 RM2
-        Connection conn2 = DriverManager.getConnection(URL, "root", "123456");
+        Connection conn2 = DriverManager.getConnection(URL2, "root", "123456");
 
         XAConnection xaConnection1 = new MysqlXAConnection((JdbcConnection) conn1, logXaCommands);
         XAConnection xaConnection2 = new MysqlXAConnection((JdbcConnection) conn2, logXaCommands);
@@ -63,7 +64,7 @@ public class Test {
             // 在 RM1 上面执行事务
             // 生成 RM1 上面的事务 ID
             rm1.start(xid1, XAResource.TMNOFLAGS);
-            PreparedStatement ps1 = conn1.prepareStatement("insert into t values(21,19,19)");
+            PreparedStatement ps1 = conn1.prepareStatement("insert into test1 values(21,19,19)");
             ps1.execute();
             // 取消调用者与事务分支的关联
             // 将底层事务状态变为 IDLE，对于 IDLE 状态的事务可以执行 PREPARE 或者 COMMIT
@@ -71,7 +72,7 @@ public class Test {
 
             // 执行 RM2 上的事务分支
             rm2.start(xid2, XAResource.TMNOFLAGS);
-            PreparedStatement ps2 = conn2.prepareStatement("insert into t values(19,20,20)");
+            PreparedStatement ps2 = conn2.prepareStatement("insert into test2 values(19,20,20)");
             ps2.execute();
             // 取消调用者与事务分支的关联
             // 将底层事务状态变为 IDLE，对于 IDLE 状态的事务可以执行 PREPARE 或者 COMMIT
@@ -86,6 +87,7 @@ public class Test {
             boolean onePhase = false;
             if (prepare1 == XAResource.XA_OK & prepare2 == XAResource.XA_OK) {
                 rm1.commit(xid1, onePhase);
+                int i = 0/0;
                 rm2.commit(xid2, onePhase);
             } else {
                 rm1.rollback(xid1);
