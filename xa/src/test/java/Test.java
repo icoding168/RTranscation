@@ -74,6 +74,7 @@ public class Test {
             rm2.start(xid2, XAResource.TMNOFLAGS);
             PreparedStatement ps2 = conn2.prepareStatement("insert into test2 values(19,20,20)");
             ps2.execute();
+//             int i = 0/0;
             // 取消调用者与事务分支的关联
             // 将底层事务状态变为 IDLE，对于 IDLE 状态的事务可以执行 PREPARE 或者 COMMIT
             rm2.end(xid2, XAResource.TMSUCCESS);
@@ -87,7 +88,7 @@ public class Test {
             boolean onePhase = false;
             if (prepare1 == XAResource.XA_OK & prepare2 == XAResource.XA_OK) {
                 rm1.commit(xid1, onePhase);
-                int i = 0/0;
+                // int i = 0/0;
                 rm2.commit(xid2, onePhase);
             } else {
                 rm1.rollback(xid1);
